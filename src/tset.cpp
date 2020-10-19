@@ -37,7 +37,7 @@ int TSet::GetMaxPower(void) const // получить макс. к-во эл-т�
 
 int TSet::IsMember(const int Elem) const // элемент множества?
 {
-    return 0;
+    return BitField.GetBit(Elem);
 }
 
 void TSet::InsElem(const int Elem) // включение элемента множества
@@ -54,40 +54,62 @@ void TSet::DelElem(const int Elem) // исключение элемента мн
 
 TSet& TSet::operator=(const TSet &s) // присваивание
 {
+    MaxPower = s.MaxPower;
+    BitField = s.BitField; 
     return *this;
 }
 
-int TSet::operator==(const TSet &s) const // сравнение
+int TSet::operator==(const TSet& s) const // сравнение
 {
-    return 0;
+    if (MaxPower != s.MaxPower)
+    {
+        return 1;
+    }
+    if (BitField == s.BitField)
+    {
+        return 1;
+    }
+    else return 0;
 }
 
 int TSet::operator!=(const TSet &s) const // сравнение
 {
-    return 1;
+    if (MaxPower == s.MaxPower)
+    {
+        return 0;
+    }
+    if (BitField == s.BitField)
+    {
+        return 0;
+    }
+    else return 1;
 }
 
 TSet TSet::operator+(const TSet &s) // объединение
 {
-    return 0;
+    return BitField | s.BitField;
 }
 
 TSet TSet::operator+(const int Elem) // объединение с элементом
 {
-    return 0;
+    TSet res(*this);
+    res.InsElem(Elem);
+    return res;
 }
 
 TSet TSet::operator-(const int Elem) // разность с элементом
 {
-    return 0;
+    TSet res(*this);
+    res.DelElem(Elem);
+    return res;
 }
 
 TSet TSet::operator*(const TSet &s) // пересечение
 {
-    return 0;
+    return BitField & s.BitField;
 }
 
-TSet TSet::operator~(void) // дополнение
+TSet TSet::operator~( ) // дополнение
 {
     BitField = ~BitField;
     return *this;
@@ -97,10 +119,24 @@ TSet TSet::operator~(void) // дополнение
 
 istream &operator>>(istream &istr, TSet &s) // ввод
 {
+    int x;
+    istr >> x;
+    while (x >= 0 && x < s.MaxPower)
+    {
+        s.InsElem(x);
+        istr >> x;
+    }
     return istr;
 }
 
 ostream& operator<<(ostream &ostr, const TSet &s) // вывод
 {
+    for (int i = 0; i < s.MaxPower; i++)
+    {
+        if (s.IsMember(i))
+        {
+            ostr << i;
+        }
+    }
     return ostr;
 }
